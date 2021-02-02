@@ -1,28 +1,48 @@
 import requests
 
-def sendMsg(ids, text):
+token = '1686577699:AAESDP4XpohQfsAxWinHBVKtWwcJuDsrzhg'
+
+
+def getUpdates():
+    data = []
+    url_Updates = f'https://api.telegram.org/bot{token}/getUpdates'
+    res = requests.get(url_Updates)
+    updates = res.json()['result']
+    final_msg = updates[-1]
+    up_id = final_msg['update_id']
+    msg_text = final_msg['message']['text']
+    chat_id = final_msg['message']['from']['id']
+    data = [up_id, msg_text, chat_id]
+
+    return data
+
+
+def sendMessage(chatId, text):
     payload = {
-        'chat_id': ids,
+        'chat_id': chatId,
         'text': text
     }
-    token = '1623544581:AAGcmnpip3itggtxdUpX_GK7CdW-y1jmkic'
-    url2 = f'https://api.telegram.org/bot{token}/sendMessage'
-    r2 = requests.get(url2, params=payload)
+    url_sendMsg = f'https://api.telegram.org/bot{token}/sendMessage'
+    r = requests.get(url_sendMsg, params=payload)
     
-def echo():
-    token = '1623544581:AAGcmnpip3itggtxdUpX_GK7CdW-y1jmkic'
-    url1 = f'https://api.telegram.org/bot{token}/getUpdates'
-    r1 = requests.get(url1)
+    return True
+
+
+def echo_bot():
+    data = getUpdates()
+    final_update_id = data[0]
     
-    data = r1.json()
-    updates = data['result']
+    while True:
+        data = getUpdates()
+        chatId = data[2]
+        text = data[1]
+        update_id = data[0]
+        
+        if final_update_id != update_id:
+            sendMessage(chatId, text)
+            final_update_id = update_id
+        else:
+            continue
 
-    for update in updates:
-        message = update['message']
-        text = message['text']
-        user = message['from']
-        i = user['id']
 
-        sendMsg(i, text)
-echo()
-
+echo_bot()
