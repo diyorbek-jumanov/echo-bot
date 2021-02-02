@@ -1,4 +1,5 @@
 import requests
+from pprint import pprint
 
 token = '1686577699:AAESDP4XpohQfsAxWinHBVKtWwcJuDsrzhg'
 
@@ -13,7 +14,7 @@ def getUpdates():
     msg_text = final_msg['message']['text']
     chat_id = final_msg['message']['from']['id']
     data = [up_id, msg_text, chat_id]
-
+    
     return data
 
 
@@ -23,15 +24,13 @@ def sendMessage(chatId, text):
         'text': text
     }
     url_sendMsg = f'https://api.telegram.org/bot{token}/sendMessage'
-    r = requests.get(url_sendMsg, params=payload)
+    r = requests.get(url=url_sendMsg, params=payload)
+    print(r.json()['result']['chat']['first_name'])
     
-    return True
 
 
 def echo_bot():
-    data = getUpdates()
-    final_update_id = data[0]
-    
+    final_update_id = 0
     while True:
         data = getUpdates()
         chatId = data[2]
@@ -41,6 +40,7 @@ def echo_bot():
         if final_update_id != update_id:
             sendMessage(chatId, text)
             final_update_id = update_id
+            
         else:
             continue
 
