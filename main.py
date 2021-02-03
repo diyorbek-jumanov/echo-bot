@@ -9,11 +9,13 @@ def getUpdates():
     url_Updates = f'https://api.telegram.org/bot{token}/getUpdates'
     res = requests.get(url_Updates)
     updates = res.json()['result']
-    # pprint(updates)
     final_msg = updates[-1]
+    pprint(final_msg)
     up_id = final_msg['update_id']
     msg_text = final_msg['message'].get('text')
     sticker = final_msg['message'].get('sticker')
+    if sticker != None:
+        sticker = sticker['file_id']
     chat_id = final_msg['message']['from']['id']
     data = [up_id, msg_text, chat_id, sticker]
     
@@ -35,9 +37,9 @@ def sendSticker(chatId, stker):
         'chat_id': chatId,
         'sticker': stker,
     }
-    url_sendMsg = f'https://api.telegram.org/bot{token}/sendSticker'
-    r = requests.get(url=url_sendMsg, params=payload)
-    print(r.url)
+    url_sendstkr = f'https://api.telegram.org/bot{token}/sendSticker'
+    r = requests.get(url=url_sendstkr, params=payload)
+    # print(r.json())
     
 
 def echo_bot():
@@ -55,6 +57,7 @@ def echo_bot():
             else:
                 sendSticker(chatId, stkr)
             final_update_id = update_id
+            
 
 
 echo_bot()
