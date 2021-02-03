@@ -12,12 +12,13 @@ def getUpdates():
     final_msg = updates[-1]
     pprint(final_msg)
     up_id = final_msg['update_id']
+    msg_id = final_msg['message']['message_id']
     msg_text = final_msg['message'].get('text')
     sticker = final_msg['message'].get('sticker')
     if sticker != None:
         sticker = sticker['file_id']
     chat_id = final_msg['message']['from']['id']
-    data = [up_id, msg_text, chat_id, sticker]
+    data = [up_id, msg_text, chat_id, sticker, msg_id]
     
     return data
 
@@ -32,10 +33,11 @@ def sendMessage(chatId, text):
     # print(r.url)
 
 
-def sendSticker(chatId, stker):
+def sendSticker(chatId, stker, reply_to_message_id):
     payload = {
         'chat_id': chatId,
         'sticker': stker,
+        'reply_to_message_id': reply_to_message_id
     }
     url_sendstkr = f'https://api.telegram.org/bot{token}/sendSticker'
     r = requests.get(url=url_sendstkr, params=payload)
@@ -47,6 +49,7 @@ def echo_bot():
     while True:
         data = getUpdates()
         # pprint(data)
+        m_id = data[4]
         stkr = data[3]
         chatId = data[2]
         text = data[1]
@@ -55,7 +58,7 @@ def echo_bot():
             if text != None:
                 sendMessage(chatId, text)
             else:
-                sendSticker(chatId, stkr)
+                sendSticker(chatId, stkr, m_id)
             final_update_id = update_id
             
 
