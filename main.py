@@ -23,10 +23,11 @@ def getUpdates():
     return data
 
 
-def sendMessage(chatId, text):
+def sendMessage(chatId, text, m_d):
     payload = {
         'chat_id': chatId,
         'text': text,
+        'reply_to_message_id': m_d
     }
     url_sendMsg = f'https://api.telegram.org/bot{token}/sendMessage'
     r = requests.get(url=url_sendMsg, params=payload)
@@ -56,7 +57,7 @@ def echo_bot():
         update_id = data[0]
         if final_update_id != update_id:
             if text != None:
-                sendMessage(chatId, text)
+                sendMessage(chatId, text, m_id)
             else:
                 sendSticker(chatId, stkr, m_id)
             final_update_id = update_id
